@@ -24,10 +24,16 @@ config :shoehorn,
 # See https://hexdocs.pm/ring_logger/readme.html for more information on
 # configuring ring_logger.
 
-config :logger, backends: [RingLogger]
+config :logger,
+  backends: [RingLogger],
+  level: :info
 
 # Import target specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
+
+# This should store API keys, currently just `dark_sky_key` for the
+# DarkSky API
+import_config "keys.secret.exs"
 
 if Mix.target() == :host do
   import_config "host.exs"
