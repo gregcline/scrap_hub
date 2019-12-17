@@ -45,7 +45,9 @@ defmodule ScrapHub.MixProject do
       {:toolshed, "~> 0.2"},
       {:scenic, "~> 0.10"},
       {:scenic_sensor, "~> 0.7"},
-      {:truetype_metrics, "~> 0.3.0"},
+      {:font_metrics, "~> 0.3.1"},
+      {:mojito, "~> 0.6.0"},
+      {:jason, "~> 1.1"},
 
       # Dependencies for only the :host
       {:scenic_driver_glfw, "~> 0.10", targets: :host},

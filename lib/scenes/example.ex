@@ -1,27 +1,37 @@
 defmodule ScrapHub.Scene.Weather do
   use Scenic.Scene
-  alias Scenic.Graph
   alias Scenic.Cache
+  alias Scenic.Graph
+  alias ScrapHub.DarkSky
   alias ScrapHub.WeatherIcons
+  alias ScrapHub.Scene.ForecastNow
   import Scenic.Primitives
   import Scenic.Components
 
-  @custom_font_folder :code.priv_dir(:scrap_hub) |> Path.join("/static/weather_icons")
-  @custom_font_hash "F2vaZmHyE93kfCEU125HbsjKmq4H3VT5VQ0tKP4CtP0"
-  @custom_metrics_path :code.priv_dir(:scrap_hub) |> Path.join("/static/weather_icons/weathericons-regular-webfont.ttf.metrics")
-  @custom_metrics_hash Cache.Support.Hash.file!(@custom_metrics_path, :sha)
+  @lat Application.fetch_env!(:scrap_hub, :lat)
+  @lng Application.fetch_env!(:scrap_hub, :lng)
 
   @graph Graph.build()
-    |> text("Hello world", font_size: 22, translate: {20, 80})
-    |> button("Do something", id: :btn_something, translate: {20, 180})
-    |> text("", font: @custom_metrics_hash, font_size: 22, translate: {20, 20})
-    |> text(WeatherIcons.get_icon("wi_day_sunny"), font: @custom_metrics_hash, font_size: 22, translate: {20, 40})
-
+         |> text("ScrapHub", font_size: 30, translate: {20, 20})
 
   def init(_scene_args, _options) do
-    Cache.Static.Font.load(@custom_font_folder, @custom_font_hash)
-    Cache.Static.FontMetrics.load(@custom_metrics_path, @custom_metrics_hash)
+    Cache.Static.Font.load(WeatherIcons.custom_font_folder(), WeatherIcons.custom_font_hash(),
+      scope: :global
+    )
 
-    {:ok, @graph, push: @graph}
+    Cache.Static.FontMetrics.load(
+      WeatherIcons.custom_metrics_path(),
+      WeatherIcons.custom_metrics_hash(),
+      scope: :global
+    )
+
+    graph =
+      @graph
+      |> ForecastNow.add_to_graph(DarkSky.forecast(@lat, @lng),
+        translate: {10, 30},
+        font: WeatherIcons.icon_font()
+      )
+
+    {:ok, graph, push: graph}
   end
 end
